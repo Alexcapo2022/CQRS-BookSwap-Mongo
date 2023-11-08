@@ -25,10 +25,10 @@ const PostSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    comentarios: {
-      type: Array,
-      default: [],
-    },
+    comentarios: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Comment' // Nombre del modelo de comentarios
+    }],
     horaPublicacion: {
       type: String,
       default: new Date().toISOString(),

@@ -1,5 +1,5 @@
 const Posts = require('../models/posts')
-const mongoose = require('mongoose')
+
 
 
 exports.Test = async (req, res) => {
@@ -23,14 +23,34 @@ exports.Test = async (req, res) => {
 };
 
 exports.getAllPosts = async (req, res) => {
-    try {
-      const allPosts = await Posts.find({}); // Esta línea buscará todos los documentos de la colección Posts
-      res.status(200).json(allPosts); // Devuelve los posts recuperados como una respuesta JSON
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error al obtener publicaciones' });
-    }
-  };
+  try {
+    const allPosts = await Posts.aggregate([
+      {
+        $lookup: {
+          from: 'comments', // Nombre de la colección de comentarios
+          localField: 'comentarios', // Campo en la colección de Posts que almacena los IDs de los comentarios
+          foreignField: '_id', // Campo en la colección de Comentarios que almacena el ID del comentario
+          as: 'commentDetails' // Nombre del nuevo campo que contendrá los detalles de los comentarios
+        }
+      },
+      {
+        $addFields: {
+          numComentarios: { $size: '$commentDetails' } // Contar el número de comentarios
+        }
+      },
+      {
+        $project: {
+          commentDetails: 0 // Eliminar el campo de detalles de comentarios (si no se necesita en la respuesta)
+        }
+      }
+    ]);
+
+    res.status(200).json(allPosts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener publicaciones' });
+  }
+};
 
   exports.query = async (req, res) => {
     try {
@@ -43,7 +63,16 @@ exports.getAllPosts = async (req, res) => {
   }
   exports.createPost = async (req, res) => {
     try {
-      const newPost = await Posts.create(req.body);
+      // Obtener la fecha actual en formato ISO8601
+      const fechaActual = new Date().toISOString();
+  
+      // Agregar la hora de publicación al objeto del nuevo post
+      const postWithHoraPublicacion = {
+        ...req.body,
+        horaPublicacion: fechaActual
+      };
+  
+      const newPost = await Posts.create(postWithHoraPublicacion);
       res.status(201).json(newPost);
     } catch (error) {
       console.error(error);
@@ -68,5 +97,28 @@ exports.getAllPosts = async (req, res) => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ mensaje: 'Error al eliminar el post' });
+    }
+  };
+  exports.addLikeToPost = async (req, res) => {
+    try {
+      const { postId } = req.params; // Obtén el ID del post de los parámetros de la solicitud
+  
+      // Encuentra la publicación por su ID
+      const post = await Posts.findById(postId);
+  
+      if (!post) {
+        return res.status(404).json({ message: 'No se encontró el post con el ID proporcionado.' });
+      }
+  
+      // Incrementa el número de likes
+      post.like = (parseInt(post.like) || 0) + 1; // Incrementa el número de likes
+  
+      // Guarda la publicación actualizada
+      const updatedPost = await post.save();
+  
+      res.status(200).json(updatedPost);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al agregar un like a la publicación' });
     }
   };
