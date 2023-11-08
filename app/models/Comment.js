@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const commentSchema = new mongoose.Schema({
   text: {
     type: String,
-    required: false
+    required: true
   },
   userID: {
     type: String,
     required: false
   },
   // Otros campos específicos de comentario
-},{versionKey: false});
+},{collection:'comments',
+  versionKey: false});
 
 module.exports = mongoose.model('Comment', commentSchema);

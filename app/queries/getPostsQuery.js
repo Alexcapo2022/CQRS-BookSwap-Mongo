@@ -1,25 +1,25 @@
-// queries/getPostsQuery.js
-const Post = require('../models/posts'); // Asegúrate de importar tu modelo de publicaciones
+const posts = require('../models/posts');
 
 const getPostCommentsQuery = async (postId) => {
   try {
-    // Encuentra la publicación por su ID
-    const post = await Post.findById(postId);
+    const post = await posts.findById(postId).populate('comentarios');
 
     if (!post) {
-      return null; // Manejo si la publicación no existe
+      return { comments: [] };
     }
 
-    const { comentarios, like, numComentarios } = post; // Obtiene comentarios, likes y cantidad de comentarios
+    const commentsFormatted = post.comentarios.map(comment => {
+      return {
+        commentID: comment._id,
+        commentText: comment.text
+      };
+    });
 
-    return {
-      comentarios,
-      like,
-      numComentarios
-    };
+    return { comments: commentsFormatted };
   } catch (error) {
-    throw error; // Manejo de errores
+    throw error;
   }
 };
 
 module.exports = getPostCommentsQuery;
+

@@ -1,6 +1,10 @@
 const createCommentCommand = require('../commands/createCommentCommand');
 const Comment = require('../models/Comment');
 const Post = require('../models/posts');
+const EventEmitter = require('events');
+const getPostCommentsQuery = require('../queries/getPostsQuery');
+
+const eventEmitter = new EventEmitter();
 
 exports.createComment = async (req, res) => {
   try {
@@ -34,9 +38,85 @@ exports.createComment = async (req, res) => {
       { new: true }
     );
 
-    res.status(201).json({ message: 'Comentario creado exitosamente', updatedPost, newCommentEvent });
+    // Emite el evento 'newCommentEvent' después de guardar el comentario
+    eventEmitter.emit('newCommentEvent', { postId, savedComment });
+
+    res.status(201).json({
+      message: 'Comentario creado exitosamente',
+      commentID: savedComment._id,
+      commentText: savedComment.text,
+      updatedPost,
+      newCommentEvent
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error al crear un comentario' });
   }
 };
+
+
+exports.getPostCommentsController = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+
+    const postComments = await getPostCommentsQuery(postId);
+
+    if (!postComments || !Array.isArray(postComments.comments)) {
+      return res.status(404).json({ message: 'No se encontraron comentarios para el post proporcionado.' });
+    }
+
+    const commentsWithText = postComments.comments.map(comment => {
+      return {
+        commentID: comment.commentID,
+        commentText: comment.commentText
+      };
+    });
+
+    res.status(200).json({ comments: commentsWithText });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener los comentarios del post.' });
+  }
+};
+
+exports.getPostCommentsController = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+
+    const postComments = await getPostCommentsQuery(postId);
+
+    if (!postComments || !Array.isArray(postComments.comments)) {
+      return res.status(404).json({ message: 'No se encontraron comentarios para el post proporcionado.' });
+    }
+
+    const commentsWithText = postComments.comments.map(comment => {
+      return {
+        commentID: comment.commentID,
+        commentText: comment.commentText
+      };
+    });
+
+    res.status(200).json({ comments: commentsWithText });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener los comentarios del post.' });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

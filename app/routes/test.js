@@ -24,4 +24,6 @@ router.post('/posts/:id/comments', ComentarioController.createComment);
 //CREAR LIKE
 router.post('/posts/:postId',RutasController.addLikeToPost);
 
+router.get('/posts/:id/comments', ComentarioController.getPostCommentsController);
+
 module.exports = router;
