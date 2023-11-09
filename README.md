@@ -61,6 +61,49 @@ Representación de Event Sourcing
 * *Mantenibilidad y Evolución del Sistema:* La separación de responsabilidades resulta fundamental para la mantenibilidad y evolución continuada del sistema a lo largo del tiempo. Esta segregación permite realizar modificaciones y mejoras en un área sin afectar negativamente la otra. Por ende, simplifica las actualizaciones y evita interdependencias que podrían dificultar la evolución del sistema.
 
 ## 3. Caso de aplicación
+**Blog de Intercambio de Libros**
+
+Para probar el proyecto se debe instalar las siguientes dependencias.
+```bash
+npm install body-parser@1.20.2 cors@2.8.5 express@4.18.2 mongoose@5.13.3 nodemon@3.0.1 --save
+```
+
+Usuarios: Permite a los usuarios registrados publicar información sobre libros que desean intercambiar.
+
+*Funcionalidades:*
+* Publicar libros disponibles para intercambio.
+* Actualizar información sobre los libros.
+* Eliminar libros de la lista.
+* Agregar comentarios a las publicaciones de libros.
+* Dar "like" a las publicaciones.
+* Consultar todos los libros disponibles.
+* Consultar comentarios de un libro específico.
+
+*Herramientas de Software:*
+* Node.js: Entorno de ejecución de JavaScript para el backend.
+* Express: Marco de aplicación web para Node.js que simplifica la creación de API RESTful.
+* MongoDB: Base de datos NoSQL utilizada para almacenar información sobre libros y comentarios.
+* Mongoose: Biblioteca de modelado de datos para MongoDB en Node.js.
+* Body-parser: Middleware que analiza datos de solicitud en middlewares.
+* CORS: Middleware para habilitar las solicitudes de recursos cruzados (Cross-Origin Resource Sharing).
+* Nodemon: Herramienta de reinicio automático del servidor en desarrollo.
+
+*Implementación CQRS:*
+En tu implementación, estás aplicando el patrón CQRS (Command Query Responsibility Segregation). Esto implica dividir la lógica en comandos (Commands) y consultas (Queries):
+
+*Queries (Consultas):*
+
+Obtener todas las publicaciones de libros.
+Obtener comentarios específicos de una publicación de libro.
+Consultas personalizadas, como buscar libros de un autor en particular.
+
+*Commands (Comandos):*
+
+Crear una nueva publicación de libro.
+Actualizar la información de un libro.
+Eliminar una publicación de libro.
+Agregar un nuevo comentario a una publicación.
+Incrementar el contador de "likes" en una publicación.
 
 ## 4. Referencias
 * Edirisinghe, D. M. (2022, 5 enero). CQRS and Mediator Design Patterns - Darshana Mihiran Edirisinghe - Medium. Medium. https://medium.com/@darshana-edirisinghe/cqrs-and-mediator-design-patterns-f11d2e9e9c2e
