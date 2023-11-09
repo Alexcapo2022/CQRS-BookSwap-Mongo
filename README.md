@@ -7,6 +7,7 @@ El acrónimo CQRS, que corresponde a la denominación Command and Query Responsi
 **Figura 1**
 
 Arquitectura CQRS
+
 ![image](https://github.com/Alexcapo2022/CQRS-BookSwap-Mongo/assets/98053517/7e71e3c1-6182-4c2d-8b4c-255e94279844)
 
 *Nota.* En la figura se muestra la estructura de la arquitectura CQRS
